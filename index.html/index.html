@@ -28,6 +28,7 @@ body{
   transform:rotate(45deg);
   animation:float 8s linear infinite;
   opacity:.5;
+  pointer-events:none;
 }
 .bg-heart:before,.bg-heart:after{
   content:"";
@@ -45,7 +46,7 @@ body{
   to{transform:translateY(-120vh) rotate(45deg)}
 }
 
-/* ---------- ENVELOPE ---------- */
+/* ================= ENVELOPE ================= */
 #envelopeScreen{
   position:absolute;
   inset:0;
@@ -56,71 +57,70 @@ body{
 }
 
 .envelope{
-  width:280px;
-  height:180px;
+  width:330px;              /* 🔼 bigger envelope */
+  height:210px;
   background:#fff;
-  border-radius:10px;
+  border-radius:12px;
   position:relative;
   cursor:pointer;
-  box-shadow:0 25px 45px rgba(0,0,0,.35);
+  box-shadow:0 30px 55px rgba(0,0,0,.35);
   animation:floatEnv 3s ease-in-out infinite;
+  perspective:800px;
 }
 
 @keyframes floatEnv{
   0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-10px)}
+  50%{transform:translateY(-12px)}
 }
 
+/* realistic flap */
 .flap{
   position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:#ffd1e6;
-  clip-path:polygon(0 0,50% 55%,100% 0);
+  top:0; left:0;
+  width:100%; height:100%;
+  background:linear-gradient(#ffd6e9,#ffc0dc);
+  clip-path:polygon(0 0,50% 60%,100% 0);
   transform-origin:top;
-  transition:transform 1s ease;
+  transition:transform 1.2s ease;
+  backface-visibility:hidden;
 }
 
 .envelope.open .flap{
-  transform:rotateX(180deg);
+  transform:rotateX(170deg);
 }
 
+/* heart */
 .env-heart{
   position:absolute;
-  top:50%;
-  left:50%;
+  top:50%; left:50%;
   transform:translate(-50%,-50%) rotate(45deg);
-  width:34px;
-  height:34px;
+  width:38px; height:38px;
   background:#ff3b6f;
   animation:pulse 1.2s infinite;
 }
 .env-heart:before,.env-heart:after{
   content:"";
   position:absolute;
-  width:34px;
-  height:34px;
+  width:38px; height:38px;
   background:#ff3b6f;
   border-radius:50%;
 }
-.env-heart:before{top:-17px;left:0}
-.env-heart:after{left:-17px;top:0}
+.env-heart:before{top:-19px;left:0}
+.env-heart:after{left:-19px;top:0}
 
 @keyframes pulse{
   0%,100%{transform:translate(-50%,-50%) rotate(45deg) scale(1)}
   50%{transform:translate(-50%,-50%) rotate(45deg) scale(1.25)}
 }
 
-/* ---------- INTRO PAGE ---------- */
+/* ================= INTRO PAGE ================= */
 #intro{
   position:absolute;
   inset:0;
   display:none;
   justify-content:center;
   align-items:center;
-  animation:slideUp 1.1s ease forwards;
+  animation:slideUp 1s ease forwards;
   z-index:9;
 }
 
@@ -137,6 +137,8 @@ body{
   box-shadow:0 20px 40px rgba(0,0,0,.3);
 }
 
+.hidden{display:none}
+
 button{
   border:none;
   padding:10px 24px;
@@ -146,8 +148,7 @@ button{
   margin-top:14px;
 }
 
-.hidden{display:none}
-.yes{background:#fff;color:#ff4f7b}
+.yes{background:#fff;color:#ff4f7b;margin-right:20px;} /* gap added */
 .no{
   background:rgba(255,255,255,.4);
   color:#fff;
@@ -187,12 +188,12 @@ for(let i=0;i<30;i++){
 <div id="intro">
   <div class="card">
     <h2>A letter for you cutiee 💕</h2>
-    <p>someone wrote only for you, my love ❤️</p>
+    <p>someone wrote this only for you, my love ❤️</p>
     <button onclick="openLove()">Open 💖</button>
   </div>
 </div>
 
-<!-- MAIN CARD (SAME FLOW) -->
+<!-- MAIN -->
 <div class="card hidden" id="mainCard">
   <h2>A Letter for You 💌</h2>
   <p>Someone wrote this just for you, Sujata…</p>
@@ -227,12 +228,11 @@ Happy Valentine’s Day, Sujata 💕
 — Yours forever, Dhruv`;
 
 function openEnvelope(){
-  const env=document.querySelector(".envelope");
-  env.classList.add("open");
+  document.querySelector(".envelope").classList.add("open");
   setTimeout(()=>{
     document.getElementById("envelopeScreen").style.display="none";
     document.getElementById("intro").style.display="flex";
-  },900);
+  },1000);
 }
 
 function openLove(){
@@ -257,10 +257,28 @@ function typeLetter(){
   })();
 }
 
+/* 🎉 CONFETTI */
+function confetti(){
+  for(let i=0;i<80;i++){
+    const c=document.createElement("div");
+    c.style.position="fixed";
+    c.style.top="-10px";
+    c.style.left=Math.random()*100+"vw";
+    c.style.width="10px";
+    c.style.height="10px";
+    c.style.background=["#ff4f7b","#ffd166","#06d6a0","#4cc9f0"][Math.floor(Math.random()*4)];
+    c.style.animation="fall 3s linear";
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),3000);
+  }
+}
+
 function sayYes(){
   document.getElementById("proposal").style.display="none";
   document.getElementById("letter").classList.remove("hidden");
   typeLetter();
+  confetti();
+
   const song=document.getElementById("loveSong");
   song.onloadedmetadata=()=>{song.currentTime=30;song.play();}
   song.load();
